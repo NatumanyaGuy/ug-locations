@@ -1,0 +1,46 @@
+{
+  "name": "ug-locations",
+  "version": "1.2.0",
+  "description": "A fast, intelligent library for searching Uganda's administrative units with fuzzy matching and full hierarchy lookup",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target=bun --external=./data-optimized.json && cp ./src/data-optimized.json dist/"
+  },
+  "keywords": [
+    "uganda",
+    "locations",
+    "districts",
+    "subcounties",
+    "parishes",
+    "villages",
+    "hierarchy",
+    "fuzzy-search",
+    "africa"
+  ],
+  "author": "Natumanya Guy",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NatumanyaGuy/locations-uganda"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "fuse.js": "^7.1.0"
+  }
+}
