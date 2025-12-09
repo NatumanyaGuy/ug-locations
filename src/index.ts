@@ -1,13 +1,11 @@
-// src/uganda.ts
-import { readFileSync } from "fs";
+// src/index.ts
+import _DATA from "./data-optimized.json" with { type: "json" };
 
-const _DATA = JSON.parse(
-  readFileSync(new URL("./data-optimized.json", import.meta.url), "utf8")
-) as {
+const DATA = _DATA as {
   districts: string[];
-  byVillage: Record<string, any>;
-  byParish: Record<string, any>;
-  bySubcounty: Record<string, any>;
+  byVillage: Record<string, UgandaLocation>;
+  byParish: Record<string, { villages: string[] }>;
+  bySubcounty: Record<string, { data: Array<{ parish: string }> }>;
 };
 
 export type UgandaLocation = {
@@ -18,20 +16,17 @@ export type UgandaLocation = {
   district: string;
 };
 
-class UgandaLocations {
-  private data = _DATA;
+export class UgandaLocations {
+  private data = DATA;
 
-  /** Get all districts */
   getDistricts(): string[] {
     return this.data.districts;
   }
 
-  /** Find village → full hierarchy (O(1)) */
   getLocationByVillage(village: string): UgandaLocation | null {
     return this.data.byVillage[village.toUpperCase()] ?? null;
   }
 
-  /** Get all villages in a parish */
   getVillagesInParish(
     district: string,
     subcounty: string,
@@ -39,41 +34,34 @@ class UgandaLocations {
   ): string[] {
     const key = `${district.toUpperCase()}||${subcounty.toUpperCase()}||${parish.toUpperCase()}`;
     const p = this.data.byParish[key];
-    return p ? p.villages.map((v: string) => v) : [];
+    return p ? p.villages : [];
   }
 
-  /** Get all parishes in a subcounty */
   getParishesInSubcounty(district: string, subcounty: string): string[] {
     const key = `${district.toUpperCase()}||${subcounty.toUpperCase()}`;
     const sc = this.data.bySubcounty[key];
-    return sc ? sc.data.map((p: any) => p.parish) : [];
+    return sc ? sc.data.map((p) => p.parish) : [];
   }
 
-  /** Get all subcounties in a district — FIXED, no more 'raw' needed */
   getSubcountiesInDistrict(district: string): string[] {
     const d = district.toUpperCase();
     if (!this.data.districts.includes(d)) return [];
 
     const result = new Set<string>();
-
-    // Loop through all subcounty keys and extract those belonging to this district
     for (const key of Object.keys(this.data.bySubcounty)) {
       if (key.startsWith(d + "||")) {
         const subcountyName = key.split("||")[1]!;
         result.add(subcountyName);
       }
     }
-
     return Array.from(result).sort();
   }
 
-  /** Search villages, parishes, subcounties, districts */
   search(query: string, options: { limit?: number } = {}): UgandaLocation[] {
     const q = query.toUpperCase().trim();
     const limit = options.limit ?? 50;
     const results: UgandaLocation[] = [];
 
-    // Fast exact or starts-with match first
     for (const [village, loc] of Object.entries(this.data.byVillage)) {
       if (results.length >= limit * 3) break;
 
@@ -86,11 +74,10 @@ class UgandaLocations {
         loc.district === q;
 
       if (matches) {
-        results.push(loc as UgandaLocation);
+        results.push(loc);
       }
     }
 
-    // Sort by relevance
     results.sort((a, b) => {
       const aScore =
         (a.village.startsWith(q) ? 4 : 0) +
@@ -108,14 +95,12 @@ class UgandaLocations {
     return results.slice(0, limit);
   }
 
-  /** Get human-readable path */
   getPath(village: string): string | null {
     const loc = this.getLocationByVillage(village);
     if (!loc) return null;
     return `${loc.district} → ${loc.subcounty} → ${loc.parish} → ${loc.village}`;
   }
 
-  /** Get parent location (e.g. parish of a village) */
   getParent(
     village: string
   ): Pick<UgandaLocation, "parish" | "subcounty" | "district"> | null {

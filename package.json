@@ -1,6 +1,6 @@
 {
   "name": "ug-locations",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A fast, intelligent library for searching Uganda's administrative units with fuzzy matching and full hierarchy lookup",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -17,7 +17,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist --target=bun --external=./data-optimized.json && cpy ./src/data-optimized.json ./dist/"
+    "build:types": "tsc -p tsconfig.build.json",
+    "build:js": "bun build ./src/index.ts --outdir ./dist --target=bun",
+    "build:cjs": "bun build ./src/index.ts --outdir ./dist --target=node --outfile=dist/index.cjs",
+    "copy:data": "cpy ./src/data-optimized.json ./dist/",
+    "build": "npm run build:types && npm run build:js && npm run build:cjs && npm run copy:data",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "uganda",
@@ -38,10 +43,10 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/node": "^20.0.0",
     "typescript": "^5.5.0"
   },
   "dependencies": {
-    "cpy-cli": "^6.0.0",
-    "fuse.js": "^7.1.0"
+    "cpy-cli": "^6.0.0"
   }
 }

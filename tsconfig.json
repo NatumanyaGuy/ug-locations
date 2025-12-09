@@ -21,9 +21,14 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
 
+    // Type declaration support
+    "declaration": false,
+    "declarationMap": false,
+
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
-  }
+  },
+  "include": ["src/**/*"]
 }
