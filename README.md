@@ -198,7 +198,6 @@ type UgandaLocation = {
 - **135+ Districts**
 - **10,000+ Villages**
 - **Complete administrative hierarchy** (Village → Parish → Subcounty → Constituency → District)
-- Data accurate as of 2022
 
 ## 📊 Data Source
 

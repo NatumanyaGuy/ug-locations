@@ -17,7 +17,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist --target=bun --external=./data-optimized.json && cp ./src/data-optimized.json dist/"
+    "build": "bun build ./src/index.ts --outdir ./dist --target=bun --external=./data-optimized.json && cpy ./src/data-optimized.json ./dist/"
   },
   "keywords": [
     "uganda",
@@ -34,13 +34,14 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/NatumanyaGuy/locations-uganda"
+    "url": "https://github.com/NatumanyaGuy/ug-locations"
   },
   "devDependencies": {
     "@types/bun": "latest",
     "typescript": "^5.5.0"
   },
   "dependencies": {
+    "cpy-cli": "^6.0.0",
     "fuse.js": "^7.1.0"
   }
 }
